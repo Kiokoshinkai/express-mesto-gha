@@ -15,7 +15,7 @@ const getUserById = (req, res, next) => {
     .orFail(new Error('NotValidId'))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'ValidationError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       } else if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });

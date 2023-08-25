@@ -31,7 +31,7 @@ const deleteCard = (req, res, next) => {
     .orFail(new Error('NotValidId'))
     .then(() => res.status(200))
     .catch((err) => {
-      if (err.message === 'ValidationError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при удалении карточки.' });
       } else if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
@@ -49,7 +49,7 @@ const addLike = (req, res, next) => {
   Card.findByIdAndUpdate(cardId, { $addToSet: { likes: userId } }, { new: true })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'ValidationError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
@@ -67,7 +67,7 @@ const removeLike = (req, res, next) => {
   Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'ValidationError') {
+      if (err.message === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       } else if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
