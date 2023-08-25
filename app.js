@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 
 const app = express();
 
@@ -9,6 +10,8 @@ const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/mestodb' } = process.en
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
 });
+
+app.use(helmet());
 
 // подключаем маршруты для пользователей и карточек
 app.use('/users', require('./routes/users'));

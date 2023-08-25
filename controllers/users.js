@@ -3,20 +3,22 @@ const User = require('../models/user');
 // возвращает всех пользователей
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.send(users))
     .catch((err) => next(err));
 };
 
 // возвращает пользователя по _id
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
-  const ERROR_CODE = 404;
 
   User.findById(userId)
-    .then((user) => res.status(200).send(user))
+    .orFail(new Error('NotValidId'))
+    .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        res.status(ERROR_CODE).send('Запрашиваемый пользователь не найден');
+      if (err.message === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      } else if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
       } else {
         next(err);
       }
@@ -26,18 +28,17 @@ const getUserById = (req, res, next) => {
 // создаёт пользователя
 const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
-  const ERROR_CODE = 400;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({
+    .then((user) => res.status(201).send({
       _id: user._id,
       name: user.name,
       about: user.about,
       avatar: user.avatar,
     }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        res.status(ERROR_CODE).send('Переданы неверные данные пользователя');
+      if (err.message === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       } else {
         next(err);
       }
@@ -48,13 +49,15 @@ const createUser = (req, res, next) => {
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const userId = req.user._id;
-  const ERROR_CODE = 400;
 
   User.findByIdAndUpdate(userId, { name, about })
-    .then((user) => res.status(200).send(user))
+    .orFail(new Error('NotValidId'))
+    .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        res.status(ERROR_CODE).send('Переданы неверные данные пользователя');
+      if (err.message === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
       } else {
         next(err);
       }
@@ -65,13 +68,14 @@ const updateProfile = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const userId = req.user._id;
-  const ERROR_CODE = 400;
 
   User.findByIdAndUpdate(userId, { avatar })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        res.status(ERROR_CODE).send('Переданы неверные данные пользователя');
+      if (err.message === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+      } else if (err.message === 'NotValidId') {
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден.' });
       } else {
         next(err);
       }
