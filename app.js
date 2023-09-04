@@ -9,9 +9,9 @@ const app = express();
 const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const errHandler = require('./middlewares/errHandler');
 const urlRegex = require('./utils/regex');
+const { auth } = require('./middlewares/auth');
+const errHandler = require('./middlewares/errHandler');
 const NotFoundErr = require('./errors/NotFoundErr');
 
 // подключаемся к серверу mongo

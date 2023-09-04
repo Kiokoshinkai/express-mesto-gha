@@ -54,7 +54,8 @@ const deleteCard = (req, res, next) => {
             next(err);
           }
         });
-    });
+    })
+    .catch(next);
 };
 
 // поставить лайк карточке
