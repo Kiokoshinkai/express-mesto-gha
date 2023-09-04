@@ -36,7 +36,7 @@ const deleteCard = (req, res, next) => {
 
   // ищем карточку
   Card.findById(cardId)
-    .orFail(new NotFoundErr('NotValidId'))
+    .orFail(new NotFoundErr('Карточка не найдена'))
     .then((card) => {
     // проверка владельца карточки
       if (card.owner.toString() !== req.user._id.toString()) {
@@ -44,7 +44,7 @@ const deleteCard = (req, res, next) => {
       }
       // удаляем карточку
       return Card.deleteOne({ _id: cardId })
-        .then(() => res.status(200)).send({ message: 'Карточка удалена' })
+        .then(() => res.status(200).send({ message: 'Карточка удалена' }))
         .catch((err) => {
           if (err.name === 'CastError') {
             throw new BadRequestErr('Переданы некорректные данные при удалении карточки.');

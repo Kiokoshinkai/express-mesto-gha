@@ -22,22 +22,22 @@ const avatarSchema = Joi.object({
   avatar: Joi.string().pattern(urlRegex),
 });
 
-userRouter.get('/users', getUsers);
+userRouter.get('/', getUsers);
 
-userRouter.get('/users/:userId', celebrate({
+userRouter.get('/me', getUserInfo);
+
+userRouter.get('/:userId', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    userId: Joi.string().hex().required(),
+    userId: Joi.string().hex().length(24).required(),
   }),
 }), getUserById);
 
-userRouter.patch('/users/me', celebrate({
+userRouter.patch('/me', celebrate({
   [Segments.BODY]: profileSchema,
 }), updateProfile);
 
-userRouter.patch('/users/me/avatar', celebrate({
+userRouter.patch('/me/avatar', celebrate({
   [Segments.BODY]: avatarSchema,
 }), updateAvatar);
-
-userRouter.get('/users/me', getUserInfo);
 
 module.exports = userRouter;
